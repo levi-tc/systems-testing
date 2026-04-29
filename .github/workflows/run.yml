@@ -18,3 +18,42 @@ jobs:
         run: |
           cd laboratories/cicd-documentation
           python3 main.py
+
+  unit-tests:
+    name: 🧪 Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: 🧪 Run unit tests
+        shell: bash
+        working-directory: laboratories/cicd-documentation
+        run: |
+          python3 -m unittest discover -v
+
+  doxygen:
+    name: 📚 Generate Doxygen documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Install Doxygen
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: 📚 Run Doxygen
+        working-directory: laboratories/cicd-documentation
+        run: doxygen Doxyfile
+
+      - name: ⬆️ Upload HTML documentation as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: doxygen-html-${{ github.sha }}
+          path: laboratories/cicd-documentation/html
+          if-no-files-found: error
