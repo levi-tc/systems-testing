@@ -1,0 +1,28 @@
+name: doxygen
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  docs:
+    name: 📚 Generate Doxygen documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Install Doxygen
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: 📚 Run Doxygen
+        working-directory: laboratories/cicd-documentation
+        run: doxygen Doxyfile
+
+      - name: ⬆️ Upload HTML documentation as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: doxygen-html-${{ github.ref_name }}
+          path: laboratories/cicd-documentation/html
+          if-no-files-found: error
